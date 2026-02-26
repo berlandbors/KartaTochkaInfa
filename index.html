@@ -1,1 +1,118 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Карта Точка Инфа - Геолокация</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+    <!-- Мобильный переключатель табов -->
+    <div id="mobileTabSwitcher" class="mobile-tab-switcher" style="display: none;">
+        <button id="tabMap" class="tab-button active" data-tab="map">
+            🗺️ Кар��а
+        </button>
+        <button id="tabInfo" class="tab-button" data-tab="info">
+            📊 Информация
+        </button>
+    </div>
 
+    <!-- Уведомление для мобильных устройств -->
+    <div id="mobileNotification" class="mobile-notification" style="display: none;">
+        <div class="notification-content">
+            <button class="notification-close" id="closeNotification">✕</button>
+            <div class="notification-icon">💡</div>
+            <div class="notification-title">Рекомендация для лучшего опыта</div>
+            <div class="notification-text">
+                Это приложение оптимизировано для работы на:
+                <ul>
+                    <li>💻 Компьютере</li>
+                    <li>📱 Планшете</li>
+                    <li>🔄 Горизонтальном режиме экрана</li>
+                </ul>
+                Используйте переключатель <strong>Карта/Информация</strong> для навигации
+            </div>
+            <label class="notification-checkbox">
+                <input type="checkbox" id="dontShowAgain">
+                Больше не показывать
+            </label>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="map-container">
+            <div class="scanline"></div>
+            <div id="map"></div>
+        </div>
+        
+        <div class="info-panel" id="info-panel">
+            <div class="info-header">
+                <h1>&gt;&gt;&gt; ГЕОЛОКАЦИЯ &lt;&lt;&lt;</h1>
+                <p>Карта Точка Инфа</p>
+            </div>
+            
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="[ ПОИСК НАСЕЛЁННЫХ ПУНКТОВ ]">
+                <div class="search-results" id="searchResults"></div>
+            </div>
+
+            <div class="controls">
+                <button class="control-btn" onclick="getCurrentLocation()">[ 📍 МОЯ ГЕОПОЗИЦИЯ ]</button>
+                <button class="control-btn" onclick="shareLocation()" id="shareBtn" disabled>[ 🔗 ПОДЕЛИТЬСЯ ]</button>
+                <button class="control-btn" onclick="clearMarkers()">[ ✖ ОЧИСТИТЬ ВСЕ ]</button>
+            </div>
+            
+            <div class="info-content" id="infoContent">
+                <div class="no-selection">
+                    ▼ КЛИКНИТЕ НА КАРТУ ▼<br><br>
+                    [ ОЖИДАНИЕ КООРДИНАТ... ]<br><br>
+                    Система готова к сканированию<br>
+                    любой точки на карте
+                </div>
+            </div>
+            
+            <div class="timestamp" id="timestamp"></div>
+        </div>
+    </div>
+
+    <!-- Модальное окно детальной информации -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+                <div class="modal-title" id="modalTitle">&gt;&gt;&gt; ДЕТАЛЬНАЯ ИНФОРМАЦИЯ &lt;&lt;&lt;</div>
+                <div class="modal-subtitle" id="modalSubtitle">Полные данные сканирования</div>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- Модальное окно шаринга -->
+    <div class="modal-overlay" id="shareModal" onclick="closeShareModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 600px;">
+            <div class="modal-header">
+                <button class="modal-close" onclick="closeShareModal()">&times;</button>
+                <div class="modal-title">&gt;&gt;&gt; ПОДЕЛИТЬСЯ ЛОКАЦИЕЙ &lt;&lt;&lt;</div>
+                <div class="modal-subtitle">Скопируйте ссылку для передачи данных</div>
+            </div>
+            <div class="modal-body">
+                <div class="share-info">
+                    <div class="share-coords" id="shareCoords"></div>
+                    <div class="share-link-container">
+                        <input type="text" id="shareLinkInput" class="share-input" readonly>
+                        <button class="share-copy-btn" onclick="copyShareLink()">
+                            <span id="copyBtnText">📋 КОПИРОВАТЬ</span>
+                        </button>
+                    </div>
+                    <div class="share-qr" id="shareQR"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
